@@ -6,7 +6,6 @@ public class GyroscopeControl : MonoBehaviour
 {
     // STATE
     private Transform rawGyroRotation;
-
     Quaternion initialRotation; 
     Quaternion gyroInitialRotation;
 
@@ -22,12 +21,9 @@ public class GyroscopeControl : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         
-        /* Get object and gyroscope initial rotation */
+        /* Get object and gyroscope initial rotation for calibration */
         initialRotation = transform.rotation; 
-        gyroInitialRotation.x = -Input.gyro.attitude.x;
-        gyroInitialRotation.y = 0.0f; // Fixed Y axis
-        gyroInitialRotation.z = -Input.gyro.attitude.y; // We rotate object on Y with Z axis gyro
-        gyroInitialRotation.w = Input.gyro.attitude.w;
+        recalibrate();
 
         /* GameObject instance used to prepare object movement */
         rawGyroRotation = new GameObject("GyroRaw").transform;
@@ -61,4 +57,13 @@ public class GyroscopeControl : MonoBehaviour
     public float getSpeed(){
         return speed;
     } 
+
+    /* Used for calibrate gyro at start or during execution using UI button for exemple */
+    public void recalibrate(){
+        gyroInitialRotation.x = -Input.gyro.attitude.x;
+        gyroInitialRotation.y = 0.0f; // Fixed Y axis
+        gyroInitialRotation.z = -Input.gyro.attitude.y; // We rotate object on Y with Z axis gyro
+        gyroInitialRotation.w = Input.gyro.attitude.w;
+        print("Successfully recalibrated !");
+    }
 }
