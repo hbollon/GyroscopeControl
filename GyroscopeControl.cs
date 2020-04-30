@@ -6,8 +6,8 @@ public class GyroscopeControl : MonoBehaviour
 {
     // STATE
     private Transform rawGyroRotation;
-    Quaternion initialRotation; 
-    Quaternion gyroInitialRotation;
+    private Quaternion initialRotation; 
+    private Quaternion gyroInitialRotation;
 
     // SETTINGS
     [SerializeField] private float smoothing = 0.1f;
