@@ -9,6 +9,8 @@ public class GyroscopeControl : MonoBehaviour
     private Quaternion initialRotation; 
     private Quaternion gyroInitialRotation;
 
+    public bool GyroEnabled { get; set; }
+
     // SETTINGS
     [SerializeField] private float smoothing = 0.1f;
     [SerializeField] private float speed = 60.0f;
@@ -20,6 +22,7 @@ public class GyroscopeControl : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
+        GyroEnabled = true;
         
         /* Get object and gyroscope initial rotation for calibration */
         initialRotation = transform.rotation; 
@@ -33,10 +36,13 @@ public class GyroscopeControl : MonoBehaviour
 
     private void Update()
     {
-        ApplyGyroRotation(); // Get rotation state in rawGyroRotation
-        Quaternion offsetRotation = Quaternion.Inverse(gyroInitialRotation) * rawGyroRotation.rotation; // Apply initial offset for calibration
+        if (Time.timeScale == 1 && GyroEnabled)
+        {
+            ApplyGyroRotation(); // Get rotation state in rawGyroRotation
+            Quaternion offsetRotation = Quaternion.Inverse(gyroInitialRotation) * rawGyroRotation.rotation; // Apply initial offset for calibration
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation * offsetRotation, smoothing); // Progressive rotation of the object
+            transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation * offsetRotation, smoothing); // Progressive rotation of the object
+        }
     }
 
     private void ApplyGyroRotation()
