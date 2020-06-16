@@ -14,6 +14,8 @@ public class GyroscopeControl : MonoBehaviour
     [SerializeField] private float smoothing = 0.1f;
     [SerializeField] private float speed = 60.0f;
 
+    public bool debug;
+
     private void InitGyro() {
         if(!gyroInitialized){
             Input.gyro.enabled = true;
@@ -81,5 +83,19 @@ public class GyroscopeControl : MonoBehaviour
         gyroInitialRotation.z = -Input.gyro.attitude.y; // We rotate object on Y with Z axis gyro
         gyroInitialRotation.w = Input.gyro.attitude.w;
         print("Successfully recalibrated !");
+    }
+
+    void OnGUI () {
+        if(debug){
+            GUIStyle style = new GUIStyle();
+            style.fontSize = Mathf.RoundToInt(Mathf.Min(Screen.width, Screen.height) / 20f);
+            style.normal.textColor = Color.white;
+            GUILayout.BeginVertical("box");
+            GUILayout.Label("Attitude: " + Input.gyro.attitude.ToString(), style);
+            GUILayout.Label("Rotation:: " + transform.rotation.ToString(), style);
+            GUILayout.Label("Initial Rotation: " + initialRotation.ToString(), style);
+            GUILayout.Label("Raw Rotation: " + rawGyroRotation.rotation.ToString(), style);
+            GUILayout.EndVertical();
+        }
     }
 }
