@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class GyroscopeControl : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class GyroscopeControl : MonoBehaviour
     private Transform rawGyroRotation;
     private Quaternion initialRotation; 
     private Quaternion gyroInitialRotation;
+    private Quaternion offsetRotation;
 
     public bool GyroEnabled { get; set; }
     private bool gyroInitialized = false;
@@ -24,12 +26,14 @@ public class GyroscopeControl : MonoBehaviour
         gyroInitialized = true;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         if(HasGyro()){
             InitGyro();
             GyroEnabled = true;
         } else GyroEnabled = false;
+
+        yield return new WaitForSeconds(1);
         
         /* Get object and gyroscope initial rotation for calibration */
         initialRotation = transform.rotation; 
@@ -46,22 +50,28 @@ public class GyroscopeControl : MonoBehaviour
         if (Time.timeScale == 1 && GyroEnabled)
         {
             ApplyGyroRotation(); // Get rotation state in rawGyroRotation
-            Quaternion offsetRotation = Quaternion.Inverse(gyroInitialRotation) * rawGyroRotation.rotation; // Apply initial offset for calibration
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation * offsetRotation, smoothing); // Progressive rotation of the object
+            transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation * rawGyroRotation.rotation, smoothing); // Progressive rotation of the object
         }
     }
 
     private void ApplyGyroRotation()
     {
+        // Apply initial offset for calibration
+        offsetRotation = Quaternion.Inverse(gyroInitialRotation) * GyroToUnity(Input.gyro.attitude);
+
         float curSpeed = Time.deltaTime * speed;
         Quaternion tempGyroRotation = new Quaternion(
-            -Input.gyro.attitude.x * curSpeed, 
-            0.0f, 
-            -Input.gyro.attitude.y * curSpeed, 
-            Input.gyro.attitude.w * curSpeed
+            offsetRotation.x * curSpeed, 
+            0f * curSpeed, 
+            offsetRotation.y * curSpeed, 
+            offsetRotation.w * curSpeed
         );
         rawGyroRotation.rotation = tempGyroRotation;
+    }
+
+    private Quaternion GyroToUnity(Quaternion gyro){
+        return new Quaternion(gyro.x, gyro.y, -gyro.z, -gyro.w);
     }
 
     private bool HasGyro(){
@@ -78,10 +88,11 @@ public class GyroscopeControl : MonoBehaviour
 
     /* Used for calibrate gyro at start or during execution using UI button for exemple */
     public void Recalibrate(){
-        gyroInitialRotation.x = -Input.gyro.attitude.x;
-        gyroInitialRotation.y = 0.0f; // Fixed Y axis
-        gyroInitialRotation.z = -Input.gyro.attitude.y; // We rotate object on Y with Z axis gyro
-        gyroInitialRotation.w = Input.gyro.attitude.w;
+        Quaternion gyro = GyroToUnity(Input.gyro.attitude);
+        gyroInitialRotation.x = gyro.x;
+        gyroInitialRotation.y = gyro.y; // Fixed Y axis
+        gyroInitialRotation.z = gyro.z; // We rotate object on Y with Z axis gyro
+        gyroInitialRotation.w = gyro.w;
         print("Successfully recalibrated !");
     }
 
@@ -92,8 +103,8 @@ public class GyroscopeControl : MonoBehaviour
             style.normal.textColor = Color.white;
             GUILayout.BeginVertical("box");
             GUILayout.Label("Attitude: " + Input.gyro.attitude.ToString(), style);
-            GUILayout.Label("Rotation:: " + transform.rotation.ToString(), style);
-            GUILayout.Label("Initial Rotation: " + initialRotation.ToString(), style);
+            GUILayout.Label("Rotation: " + transform.rotation.ToString(), style);
+            GUILayout.Label("Offset Rotation: " + offsetRotation.ToString(), style);
             GUILayout.Label("Raw Rotation: " + rawGyroRotation.rotation.ToString(), style);
             GUILayout.EndVertical();
         }
