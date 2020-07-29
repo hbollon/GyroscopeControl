@@ -1,5 +1,5 @@
 <h1 align="center">GyroscopeControl : Unity script for object rotation on mobile devices with gyroscope</h1>
-Unity script used for smooth and customizable object rotation with gyroscope (initially configured to rotate x and z axis using x and y axis of gyro but can be easily edited). It include initial calibration with offset, rotation speed (Time.deltaTime * velocity), smoothing parameter editable in Unity inspector and debug overlay.
+Unity script used for smooth and customizable object rotation with gyroscope (initially configured to rotate x and z axis using x and y axis of gyro but can be easily edited). It includes initial calibration with offset, rotation speed (Time.deltaTime * velocity), smoothing parameter editable in Unity inspector and debug overlay.
 
 This script has been designed to be easily customizable and to obtain the smoothest and most flexible rotation possible.
 Tested on Android.
@@ -19,7 +19,7 @@ Quaternion tempGyroRotation = new Quaternion(
 ## Settings
 This script contain 3 parameters editable through Unity inspector :
 * Speed : change rotation speed of the object
-* Smoothing : must be between 0 and 1, it change the delay for the object in order to reach its final position
+* Smoothing : must be between 0 and 1, it changes the delay for the object in order to reach its final position
 * Debug : displays an overlay which includes a lot of information such as: real-time gyro attitude, offset, initial position ect...
 
 ## 🤝 Contributing
