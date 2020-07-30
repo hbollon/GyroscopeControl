@@ -17,9 +17,11 @@ Quaternion tempGyroRotation = new Quaternion(
 );
 ```
 ## Settings
-This script contain 3 parameters editable through Unity inspector :
+This script contain few parameters editable through Unity inspector :
 * Speed : change rotation speed of the object
 * Smoothing : must be between 0 and 1, it changes the delay for the object in order to reach its final position
+* Wait Gyro Initialization : used to enable or disable the initial delay to wait gyroscope activation
+* Wait Gyro Initialization Duration : duration of the initial delay in seconds
 * Debug : displays an overlay which includes a lot of information such as: real-time gyro attitude, offset, initial position ect...
 
 ## 🤝 Contributing
