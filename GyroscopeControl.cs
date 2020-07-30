@@ -15,6 +15,8 @@ public class GyroscopeControl : MonoBehaviour
     // SETTINGS
     [SerializeField] private float smoothing = 0.1f;
     [SerializeField] private float speed = 60.0f;
+    [SerializeField] private bool waitGyroInitialization = true; 
+    [SerializeField] private float waitGyroInitializationDuration = 1f; 
 
     public bool debug;
 
@@ -26,6 +28,13 @@ public class GyroscopeControl : MonoBehaviour
         gyroInitialized = true;
     }
 
+    private void Awake() {
+        if(waitGyroInitialization && waitGyroInitializationDuration < 0f){
+            waitGyroInitializationDuration = 1f;
+            throw new System.ArgumentException("waitGyroInitializationDuration can't be negative, it was set to 1 second");
+        }
+    }
+
     private IEnumerator Start()
     {
         if(HasGyro()){
@@ -33,7 +42,10 @@ public class GyroscopeControl : MonoBehaviour
             GyroEnabled = true;
         } else GyroEnabled = false;
 
-        yield return new WaitForSeconds(1);
+        if(waitGyroInitialization)
+            yield return new WaitForSeconds(waitGyroInitializationDuration);
+        else
+            yield return null;
         
         /* Get object and gyroscope initial rotation for calibration */
         initialRotation = transform.rotation; 
